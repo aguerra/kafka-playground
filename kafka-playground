@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KAFKA="docker-compose exec kafka"
+SERVER="localhost:9092"
+ZOOKEEPER="zookeeper:2181"
+PRODUCER="kafka-console-producer --request-required-acks 1 \
+                                 --broker-list $SERVER"
+CONSUMER="kafka-console-consumer --bootstrap-server $SERVER"
+TOPICS="kafka-topics --zookeeper $ZOOKEEPER"
+CONSUMER_GROUPS="kafka-consumer-groups --bootstrap-server $SERVER"
+
+case "${1:-}" in
+    producer)
+        $KAFKA $PRODUCER "$@"
+        ;;
+    consumer)
+        $KAFKA $CONSUMER "$@"
+        ;;
+    consumer-groups)
+        $KAFKA $CONSUMER_GROUPS "$@"
+        ;;
+    topics)
+        $KAFKA $TOPICS "$@"
+        ;;
+    *)
+        echo "Usage: $0 {consumer|producer|topics|consumer-groups}"
+        exit 1
+esac
